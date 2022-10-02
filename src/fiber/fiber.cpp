@@ -1,30 +1,15 @@
 #include "fiber.h"
 
-#define VC_EXTRALEAN
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include <cstdint>
 #include <iostream>
 
+#include "Utils/os.h"
+
 #define DEFAULT_STACK_SIZE 131072 // 128kb
 
-extern "C" fiber_transfer jump_fcontext(const void* , void *);
-extern "C" void* make_fcontext(void *, size_t, fiber_cb *);
-
-size_t os_pagesz(void)
-{
-    SYSTEM_INFO si;
-    GetSystemInfo(&si);
-    return (size_t)si.dwPageSize;
-}
-
-size_t os_align_pagesz(size_t size)
-{
-    size_t page_sz = os_pagesz();
-    size_t page_cnt = (size + page_sz - 1) / page_sz;
-    return page_cnt * page_sz;
-}
+// Fwd declare ASM functions
+extern "C" fiber_transfer jump_fcontext(const void *, void *);
+extern "C" void *make_fcontext(void *, size_t, fiber_cb *);
 
 bool fiber_stack_init(fiber_stack *fstack, unsigned int size)
 {
@@ -56,12 +41,12 @@ void fiber_stack_release(fiber_stack *fstack)
     VirtualFree(ptr, 0, MEM_RELEASE);
 }
 
-void* fiber_create(const fiber_stack stack, fiber_cb *fiber_cb)
+fiber_t fiber_create(const fiber_stack stack, fiber_cb *fiber_cb)
 {
     return make_fcontext(stack.sptr, stack.ssize, fiber_cb);
 }
 
-fiber_transfer fiber_switch(const void* to, void *userData)
+fiber_transfer fiber_switch(const fiber_t to, void *userData)
 {
     return jump_fcontext(to, userData);
 }

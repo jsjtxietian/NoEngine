@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.0)
-project(sx)
+project(NoEngine)
 
 # Enable Assembler
 if (MSVC AND NOT CMAKE_C_COMPILER_ID MATCHES "Clang")
@@ -9,9 +9,11 @@ else()
     enable_language(CXX ASM)
 endif()
 
-set(SOURCE_FILES test.cpp src/fiber/fiber.cpp)
+set(SOURCE_FILES test.cpp src/fiber/fiber.cpp src/job/job.cpp  src/utils/os.cpp)
 
-set(INCLUDE_FILES src/fiber/fiber.h)
+include_directories(src)
+set(INCLUDE_FILES src/fiber/fiber.h src/job/job.h src/utils/os.h)
+
 
 ####################################################################################################
 # Assembly files for fcontext
