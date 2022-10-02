@@ -3,7 +3,7 @@
 typedef struct fiber_transfer
 {
     void* from;
-    void *user;
+    void *userData;
 } fiber_transfer;
 
 typedef struct fiber_stack
